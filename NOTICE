@@ -1,0 +1,23 @@
+BrightImport
+Copyright 2026 gi-os
+
+The Fujifilm PTP/IP implementation in app/src/main/kotlin/com/gios/brightimport/fuji/ is a Kotlin
+port of work from the following Apache-2.0 licensed projects by Daniel Cook (petabyt):
+
+  - petabyt/libpict   — the PTP container format and operation set
+                        https://github.com/petabyt/libpict
+  - petabyt/fudge     — lib/fuji.c and lib/fujiptp.h, the Fuji vendor protocol
+                        https://github.com/petabyt/fudge
+
+Fujifilm publishes no documentation for this protocol. Those files are the only public
+description of it, and were produced by packet capture rather than from any specification.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
