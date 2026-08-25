@@ -76,8 +76,6 @@ MIT, except the Light SDK design language in `ui/theme` (MIT, © The Light Phone
 
 ## Bright\*
 
-*Photos off a real camera and into the phone's roll, over the camera's own Wi-Fi.*
-
 26 open-source apps for the **Light Phone III** — camera, music, maps, messages,
 reading, transit, games. The phone has no app store, so they install by sideload: scan one
 code from **[brightmarket.gzl.dev](https://brightmarket.gzl.dev)** and BrightMarket keeps them updated.
