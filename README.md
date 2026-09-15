@@ -1,5 +1,7 @@
 # BrightImport
 
+[**⬇ Download the latest APK**](https://github.com/gi-os/BrightImport/releases/latest) · free, open source.
+
 Pull photos off a camera onto the Light Phone III, over the camera's own Wi-Fi, and into the roll.
 
 Imports land in `DCIM/BrightImport`, which is inside the folder [Roll](https://github.com/gi-os/Roll)
