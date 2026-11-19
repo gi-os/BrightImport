@@ -62,7 +62,7 @@ jobs:
             echo '::error::Release signing accepted an unexpected lineage root'
             exit 1
           fi
-          grep -Fx '::error::APK lineage must link the pinned original and rotated certificates' "$test_dir/rejection.log"
+          grep -Fxq '::error::APK lineage must link the pinned original and rotated certificates' "$test_dir/rejection.log"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
