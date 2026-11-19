@@ -62,9 +62,56 @@ Four things about it are worth knowing before touching `FujiSession.kt`:
 
 ## Building
 
-`./gradlew :app:assembleRelease`, or push to `main` and let CI cut the release. Unit tests cover
-the packet framing and `ObjectInfo` parsing on the JVM — the code where an off-by-two byte is
-invisible on a phone and obvious in an assertion.
+`./gradlew :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease` tests and builds
+locally. The debug APK uses Android's debug key and cannot upgrade a release install.
+The local release APK is unsigned; branch and PR checks test signing with disposable keys
+and do not publish. A push to `main` (except Markdown-only changes) or a manual run on
+`main` publishes a GitHub release when the release workflow is enabled.
+
+### Rotate the release signing key before merging
+
+1. Disable [Build & Release APK](https://github.com/gi-os/BrightImport/actions/workflows/build.yml)
+   before merging to `main`: `gh workflow disable build.yml --repo gi-os/BrightImport`.
+2. In a private directory outside the checkout, use `apksigner` from Android Build Tools
+   35.0.0 to create the lineage. Use fresh passwords when prompted. The old key is needed
+   offline for this step only; never upload it to CI.
+
+   ```sh
+   keytool -genkeypair -storetype JKS -keystore brightimport-new.jks -alias brightimport-release \
+     -keyalg RSA -keysize 3072 -validity 10000
+
+   apksigner rotate --out brightimport.lineage \
+     --old-signer --ks /path/to/original/brightimport.jks --ks-key-alias brightimport \
+     --set-installed-data true --set-rollback false \
+     --new-signer --ks brightimport-new.jks --ks-key-alias brightimport-release
+
+   apksigner lineage --in brightimport.lineage --print-certs
+   ```
+
+3. Verify that signer #1's SHA-256 digest matches `signing-lineage-root-fingerprint.txt`.
+   Set `signing-fingerprint.txt` to signer #2's SHA-256 digest in the signing PR.
+   Leave the original pin unchanged. The release workflow refuses to publish until the pins
+   are distinct and match the signed APK's lineage.
+4. Populate the five [repository Actions secrets](https://github.com/gi-os/BrightImport/settings/secrets/actions).
+   Run the following on Linux and enter the new keystore password, `brightimport-release`,
+   and the new key password when prompted, in that order:
+
+   ```sh
+   base64 -w 0 brightimport-new.jks | gh secret set RELEASE_KEYSTORE_BASE64 --repo gi-os/BrightImport
+   base64 -w 0 brightimport.lineage | gh secret set SIGNING_LINEAGE_BASE64 --repo gi-os/BrightImport
+   gh secret set KEYSTORE_PASSWORD --repo gi-os/BrightImport
+   gh secret set KEY_ALIAS --repo gi-os/BrightImport
+   gh secret set KEY_PASSWORD --repo gi-os/BrightImport
+   ```
+
+5. With publishing disabled, merge the signing PR into `main`, then sync `main` into
+   the default branch `init` so it also stops shipping the exposed key and password.
+   Preserve the `init` README content when syncing. The old key remains compromised
+   even after the files are removed.
+6. Coordinate any BrightMarket catalog or updater pins before re-enabling the workflow
+   for an authorized release. BrightImport requires API 29, so v3 key rotation supports
+   in-place updates on all supported Android versions, but an updater that only trusts
+   the original fingerprint can still reject the rotated APK.
 
 ## Licence
 
