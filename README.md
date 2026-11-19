@@ -92,16 +92,20 @@ and do not publish. A push to `main` (except Markdown-only changes) or a manual 
    Set `signing-fingerprint.txt` to signer #2's SHA-256 digest in the signing PR.
    Leave the original pin unchanged. The release workflow refuses to publish until the pins
    are distinct and match the signed APK's lineage.
-4. Populate the five [repository Actions secrets](https://github.com/gi-os/BrightImport/settings/secrets/actions).
-   Run the following on Linux and enter the new keystore password, `brightimport-release`,
-   and the new key password when prompted, in that order:
+4. In [Settings → Environments](https://github.com/gi-os/BrightImport/settings/environments),
+   create an environment named `release`. Under **Deployment branches and tags**, choose
+   **Selected branches and tags**, and add one **Branch** rule for `main` only.
+   Do not add any tag rules or put these secrets at repository or organization scope.
+   Populate the five environment secrets using the following commands on Linux. Enter the
+   new keystore password, `brightimport-release`, and the new key password when prompted,
+   in that order:
 
    ```sh
-   base64 -w 0 brightimport-new.jks | gh secret set RELEASE_KEYSTORE_BASE64 --repo gi-os/BrightImport
-   base64 -w 0 brightimport.lineage | gh secret set SIGNING_LINEAGE_BASE64 --repo gi-os/BrightImport
-   gh secret set KEYSTORE_PASSWORD --repo gi-os/BrightImport
-   gh secret set KEY_ALIAS --repo gi-os/BrightImport
-   gh secret set KEY_PASSWORD --repo gi-os/BrightImport
+   base64 -w 0 brightimport-new.jks | gh secret set RELEASE_KEYSTORE_BASE64 --env release --repo gi-os/BrightImport
+   base64 -w 0 brightimport.lineage | gh secret set SIGNING_LINEAGE_BASE64 --env release --repo gi-os/BrightImport
+   gh secret set KEYSTORE_PASSWORD --env release --repo gi-os/BrightImport
+   gh secret set KEY_ALIAS --env release --repo gi-os/BrightImport
+   gh secret set KEY_PASSWORD --env release --repo gi-os/BrightImport
    ```
 
 5. With publishing disabled, merge the signing PR into `main`, then sync `main` into
